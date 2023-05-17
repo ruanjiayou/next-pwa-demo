@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+**/public/workbox-*.js
+**/public/sw.js
+**/public/worker-*.js
+**/public/*.map
+.next
