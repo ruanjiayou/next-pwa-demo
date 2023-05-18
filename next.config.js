@@ -1,5 +1,6 @@
 import WithPWA from 'next-pwa'
 import cache from './cache.js'
+import { withSuperjson } from 'next-superjson'
 
 const withPWA = WithPWA({
   dest: 'public',
@@ -11,7 +12,7 @@ const withPWA = WithPWA({
   // sw: 'sw.js',
 })
 
-export default withPWA({
+export default withSuperjson()(withPWA({
   compress: true,
   poweredByHeader: false,
   distDir: 'dist',
@@ -20,4 +21,4 @@ export default withPWA({
     return 'my-build-id'
   },
   trailingSlash: false,
-})
+}))
