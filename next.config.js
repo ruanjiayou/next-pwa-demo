@@ -1,5 +1,5 @@
 import WithPWA from 'next-pwa'
-import cache from './cache.js'
+import cache from './fe/cache.js'
 import { withSuperjson } from 'next-superjson'
 
 const withPWA = WithPWA({
