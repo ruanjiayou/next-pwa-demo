@@ -48,7 +48,7 @@ export default function RuleEdit({ data, cancel, save }) {
           <Input disabled={local.editORadd === 'edit'} onChange={e => local.data._id = e.target.value} defaultValue={local.data._id} />
         </Item>
         <Item label="名称:" labelCol={{ span: 4 }}>
-          <Input value={local.data.title} autoFocus onChange={e => local.data.title = e.target.value} defaultValue={local.data.name} />
+          <Input value={local.data.name} autoFocus onChange={e => local.data.name = e.target.value} defaultValue={local.data.name} />
         </Item>
         <Item label="描述:" labelCol={{ span: 4 }} defaultValue={local.data.desc}>
           <Input.TextArea />

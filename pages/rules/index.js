@@ -135,7 +135,7 @@ export default function RulePage(props) {
     },
     {
       title: '匹配规则',
-      key: 'matches',
+      key: 'urls',
       dataIndex: '_id',
       render: (_, { urls }) => (
         <>
@@ -188,6 +188,7 @@ export default function RulePage(props) {
     {isModalOpen && <RuleEdit cancel={() => setIsModalOpen(false)} data={local.tempData} save={async (data) => {
       const result = local.tempData._id ? await apis.updateRule(local.tempData._id, data) : await apis.createRule(data)
       if (result.code === 0) {
+        await getRules()
         notification.info({ message: '保存成功' });
         setIsModalOpen(false);
       } else {
