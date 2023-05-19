@@ -9,7 +9,7 @@ import RuleEdit from "fe/modules/rule/edit";
 import apis from 'fe/apis'
 import { Wrap } from '@/component'
 import { match } from 'path-to-regexp'
-import { parse } from 'url'
+import { IconWrap } from 'fe/component/index.js'
 
 const RuleStatus = {
   0: { text: '开发中', color: 'blue' },
@@ -91,22 +91,30 @@ export default function RulePage(props) {
     }
   }
   const matchUrl = (link) => {
-    const uri = parse(link)
+    if (!link || !link.startsWith('http')) {
+      return null;
+    }
+    const url1 = new window.URL(link)
     let found = null;
-    const origin = `${uri.protocol}//${uri.host}`;
     for (let i = 0; i < local.rules.length; i++) {
       const rule = local.rules[i];
       for (let j = 0; j < rule.urls.length; j++) {
-        const url = rule.urls[j];
-        const path = parse(url).pathname
-        if (url.startsWith(origin)) {
-          const fn = match(path, { decode: decodeURIComponent })
-          const result = fn(uri.pathname)
-          if (result) {
+        const url_pattern = rule.urls[j];
+        const url2 = new window.URL(url_pattern);
+        if (url_pattern.startsWith(url1.origin)) {
+          const fn = match(url2.pathname, { decode: decodeURIComponent })
+          const result = fn(url1.pathname)
+          if (result.params) {
             found = result.params;
+            [...url2.searchParams.entries()].forEach(([key, value]) => {
+              if (value.startsWith(':')) {
+                value = url1.searchParams.get(key).substring(1);
+                found[key] = value;
+              }
+            })
             local.matchURL.url = link;
             local.matchURL.matched_rule_id = rule._id;
-            local.matchURL.params = result.params
+            local.matchURL.params = found
             break;
           }
         }
@@ -152,9 +160,11 @@ export default function RulePage(props) {
       key: '_id',
       render: (_, record) => (
         <Space size="middle">
-          <AiTwotoneEdit onClick={() => {
-            editData(record);
-          }} />
+          <IconWrap>
+            <AiTwotoneEdit onClick={() => {
+              editData(record);
+            }} />
+          </IconWrap>
           <Popconfirm
             title="提示"
             description="确定要删除吗?"
@@ -169,7 +179,9 @@ export default function RulePage(props) {
             okText="确认"
             cancelText="取消"
           >
-            <AiTwotoneDelete />
+            <IconWrap>
+              <AiTwotoneDelete />
+            </IconWrap>
           </Popconfirm>
         </Space>
       ),

@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { Button, Space, Table, notification, Popconfirm, Modal, Select, Input, Form, Tag, } from 'antd';
 import { Observer, useLocalObservable, } from 'mobx-react-lite';
 import { BsSend, BsSendCheck } from 'react-icons/bs'
+import { BiEdit } from 'react-icons/bi'
+import { FaLink } from 'react-icons/fa'
 import { AiTwotoneEdit, AiTwotoneDelete, AiTwotoneRocket, AiOutlineReload, AiOutlineLine } from 'react-icons/ai'
 import apis from 'fe/apis'
-import { Wrap } from '@/component'
-import { match } from 'path-to-regexp'
-import { parse } from 'url'
 import constant from '~/constant.js';
+import { IconWrap } from 'fe/component/index.js'
 
 const RecordStatus = {
   1: { text: "已创建", color: '#38b1eb' },
@@ -42,20 +42,21 @@ export default function RecordPage() {
     {
       title: '原地址',
       dataIndex: 'url',
-      render: (url) => (<Link target={"_blank"} title={url} href={url}><AiOutlineLine /></Link>)
+      render: (url) => (<Link target={"_blank"} title={url} href={url}><FaLink /></Link>)
     },
     {
       title: '操作',
       key: '_id',
       render: (_, record) => (
         <Space size="middle">
-          <AiTwotoneEdit twoToneColor="red" onClick={() => {
-            // editData(record);
-          }} />
-          {record.status === constant.RECORD.STATUS.DISCARD && (
-            <AiTwotoneEdit twoToneColor="red" />
-          )}
-          {record.available === 1 ? <BsSendCheck /> : <BsSend />}
+          <IconWrap>
+            <BiEdit onClick={() => {
+              // editData(record);
+            }} />
+          </IconWrap>
+          <IconWrap>
+            {record.available === 1 ? <BsSendCheck /> : <BsSend />}
+          </IconWrap>
         </Space>
       ),
     },

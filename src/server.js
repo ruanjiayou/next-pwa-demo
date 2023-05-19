@@ -28,7 +28,7 @@ class Server {
 
     this.server = httpServer(this.express)
     this.server.listen(this.port, () => {
-      console.log(`server launch at: ${this.port} ${process.env.NODE_ENV}`);
+      console.log(`server launch at: http://localhost:${this.port} ${process.env.NODE_ENV}`);
     });
   }
 
