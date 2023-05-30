@@ -1,9 +1,7 @@
 import { Router } from 'express';
 import models from '~/db/mongo/index.js'
 import { VM, NodeVM, VMScript } from 'vm2'
-import helper from '~/utils/helper.js';
 import constant from '~/constant.js';
-import { match } from 'path-to-regexp';
 import _ from 'lodash'
 
 const router = Router();
@@ -14,60 +12,37 @@ router.post('/', async (req, res) => {
   res.success(result);
 });
 router.post('/detect', async (req, res) => {
-  const url = new URL(req.query.url);
-  const { origin, pathname, searchParams } = url;
-  let result, record, params;
-  const rules = await models.Rule.getAll({ where: { status: constant.RULE.STATUS.RUNNING, }, lean: true })
-  for (let j = 0; j < rules.length; j++) {
-    const rule = rules[j];
-    let matched = false;
-    for (let i = 0; i < rule.urls.length; i++) {
-      const match_url = rule.urls[i];
-      const fn = match(new URL(match_url).pathname || '', { decode: decodeURIComponent });
-      const parsed = fn(pathname);
-      if (parsed.params) {
-        matched = true;
-        result = rule;
-        params = parsed.params;
-        const arr = [...(new URL(match_url).searchParams.entries())]
-        arr.forEach(([key, value]) => {
-          if (value.startsWith(':')) {
-            value = value.substring(1);
-            params[value] = searchParams.get(key);
-          }
-        });
-        break;
+  const u = new URL(req.query.url);
+  let record;
+  const rule = await models.Rule.findOne({ status: constant.RULE.STATUS.RUNNING, pattern: { $regex: u.origin } })
+  if (rule) {
+    const params = rule.getParams(req.query.url);
+    if (params && params.id) {
+      let code = 1001, message = '匹配到规则但没数据';
+      record = await models.Record.findOne({ rule_id: rule._id, source_id: params.id }).lean(true);
+      if (record) {
+        switch (record.status) {
+          case constant.RECORD.STATUS.ERRORED:
+            code = 1004;
+            message = '抓取失败';
+            break;
+          case constant.RECORD.STATUS.DEALING:
+            code = 1003;
+            message = '处理中';
+            break;
+          case constant.RECORD.STATUS.CREATED:
+            code = 1003;
+            message = '处理中';
+            break;
+          default:
+            // constant.RECORD.STATUS.SUCCESS constant.RECORD.STATUS.CREATED constant.RECORD.STATUS.DEALING
+            code = 1002;
+            message = '抓取数据成功';
+            break;
+        }
       }
     }
-    if (matched) {
-      break;
-    }
-  }
-  if (result) {
-    let code = 1001, message = '匹配到规则但没数据';
-    record = await models.Record.findOne({ rule_id: result._id, source_id: params.id }).lean(true);
-    if (record) {
-      switch (record.status) {
-        case constant.RECORD.STATUS.ERRORED:
-          code = 1004;
-          message = '抓取失败';
-          break;
-        case constant.RECORD.STATUS.DEALING:
-          code = 1003;
-          message = '处理中';
-          break;
-        case constant.RECORD.STATUS.CREATED:
-          code = 1003;
-          message = '处理中';
-          break;
-        default:
-          // constant.RECORD.STATUS.SUCCESS constant.RECORD.STATUS.CREATED constant.RECORD.STATUS.DEALING
-          code = 1002;
-          message = '抓取数据成功';
-          break;
-      }
-    }
-    res.json({ code, message, data: { record, rule: _.omit(result, ['script']), params } });
+    res.json({ code, message, data: { record, rule: _.omit(rule.toJSON(), ['script']), params } });
   } else {
     // 未匹配到规则
     res.json({ code: 1000, message: '未匹配到规则' })
@@ -86,21 +61,29 @@ router.delete('/:id', async (req, res) => {
 })
 
 router.put('/:id', async (req, res) => {
+  if (req.body.urls) {
+    const o = req.body.urls.find(it => it.enabled === true);
+    if (o) {
+      req.body.pattern = o.url;
+    } else {
+      req.body.pattern = '';
+    }
+  }
   await models.Rule.updateOne({ _id: req.params.id }, { $set: req.body });
   res.success();
 })
 
 router.patch('/:id', async (req, res) => {
   const rule = await models.Rule.findOne({ _id: req.params.id });
-  const url = req.body.url, preview = req.query.preview ? true : false;
+  const preview = req.query.preview ? true : false;
   if (!rule) {
     res.fail({ message: 'no rule' });
   } else {
+    const url = rule.getPureUrl(req.body.url);
     let script = spiders[rule._id]
     if (script === undefined) {
-      const code = process.env.NODE_ENV === 'development' ? helper.readTxt(constant.ROOT_PATH + '/spiders/' + rule._id + '.js') : rule.script || '';
+      const code = rule.script || '';
       script = new VMScript(code).compile();
-      // spiders[rule._id] = script;
     }
     if (!script) {
       return res.fail({ message: "脚本错误" });
@@ -119,7 +102,6 @@ router.patch('/:id', async (req, res) => {
       const data = await fn({
         constant,
         models,
-        helper,
         rule,
         url,
         preview

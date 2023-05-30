@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import React, { useState, useRef } from 'react';
-import { Button, Modal, Input, Form, Select, Radio, notification, Space, } from 'antd';
+import { Button, Modal, Input, Form, Select, Radio, notification, Space, Switch, } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons'
 import { Observer, useLocalStore } from 'mobx-react-lite';
 import CodeEditor from '@/modules/code-editor'
@@ -85,14 +85,12 @@ export default function RuleEdit({ data, cancel, save }) {
         <Item label="规则" labelCol={{ span: 4 }}>
           <Space direction='vertical' style={{ width: '100%' }}>
             {local.data.urls.length === 0 && <label style={{ lineHeight: '32px' }}>暂无数据</label>}
-            {local.data.urls.map((url, i) => <Input key={i} value={url} readOnly addonAfter={<CloseCircleTwoTone onClick={() => {
-              local.data.urls.splice(i, 1)
-            }} />} />)}
+            {local.data.urls.map((item, i) => <Input key={i} value={item.url} readOnly addonAfter={<Switch checked={item.enabled} onChange={v => item.enabled = v} />} addonBefore={item.enabled ? '开启' : '关闭'} />)}
             <Input addonBefore="添加" ref={ref => urlRef.current = ref} addonAfter={<CheckCircleTwoTone onClick={() => {
               if (urlRef.current) {
                 const url = urlRef.current.input.value.trim();
                 if (url) {
-                  local.data.urls.push(url);
+                  local.data.urls.push({ url, enabled: false });
                 } else {
                   notification.warning({ message: '请输入有效规则' })
                 }
@@ -101,7 +99,7 @@ export default function RuleEdit({ data, cancel, save }) {
           </Space>
         </Item>
         <Item>
-          <CodeEditor style={{ height: 400, overflow: 'auto' }} value={local.data.script} onChange={v => local.data.script = v} />
+          <CodeEditor value={local.data.script} onChange={v => local.data.script = v} />
         </Item>
       </Form>
     </Modal>

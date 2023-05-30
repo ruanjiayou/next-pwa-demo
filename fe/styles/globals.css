@@ -41,3 +41,8 @@ button {
 #__next {
   height: 100%;
 }
+
+.cm-editor {
+  height: 400px;
+  border: 1px solid #eee;
+}

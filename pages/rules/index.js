@@ -98,25 +98,23 @@ export default function RulePage(props) {
     let found = null;
     for (let i = 0; i < local.rules.length; i++) {
       const rule = local.rules[i];
-      for (let j = 0; j < rule.urls.length; j++) {
-        const url_pattern = rule.urls[j];
-        const url2 = new window.URL(url_pattern);
-        if (url_pattern.startsWith(url1.origin)) {
-          const fn = match(url2.pathname, { decode: decodeURIComponent })
-          const result = fn(url1.pathname)
-          if (result.params) {
-            found = result.params;
-            [...url2.searchParams.entries()].forEach(([key, value]) => {
-              if (value.startsWith(':')) {
-                value = url1.searchParams.get(key).substring(1);
-                found[key] = value;
-              }
-            })
-            local.matchURL.url = link;
-            local.matchURL.matched_rule_id = rule._id;
-            local.matchURL.params = found
-            break;
-          }
+      const url_pattern = rule.pattern;
+      const url2 = new window.URL(url_pattern);
+      if (url_pattern.startsWith(url1.origin)) {
+        const fn = match(url2.pathname, { decode: decodeURIComponent })
+        const result = fn(url1.pathname)
+        if (result.params) {
+          found = result.params;
+          [...url2.searchParams.entries()].forEach(([key, value]) => {
+            if (value.startsWith(':')) {
+              value = url1.searchParams.get(key).substring(1);
+              found[key] = value;
+            }
+          })
+          local.matchURL.url = link;
+          local.matchURL.matched_rule_id = rule._id;
+          local.matchURL.params = found
+          break;
         }
       }
       if (found) {
@@ -143,17 +141,8 @@ export default function RulePage(props) {
     },
     {
       title: '匹配规则',
-      key: 'urls',
+      key: 'pattern',
       dataIndex: '_id',
-      render: (_, { urls }) => (
-        <>
-          {urls.map((url, i) => {
-            return (
-              <p key={i}>{url}</p>
-            );
-          })}
-        </>
-      ),
     },
     {
       title: '操作',
