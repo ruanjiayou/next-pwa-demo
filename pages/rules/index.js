@@ -142,7 +142,7 @@ export default function RulePage(props) {
     {
       title: '匹配规则',
       key: 'pattern',
-      dataIndex: '_id',
+      dataIndex: 'pattern',
     },
     {
       title: '操作',
@@ -219,6 +219,7 @@ export default function RulePage(props) {
         </Form.Item>
         <Form.Item label="地址" labelCol={{ span: 2 }} name="url">
           <Input
+            autoFocus
             onPaste={(e) => {
               matchUrl(e.target.value)
             }}

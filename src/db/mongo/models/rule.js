@@ -5,6 +5,7 @@ import { URL } from 'url'
 import sparkmd5 from 'spark-md5'
 import { match, compile } from 'path-to-regexp';
 import qs from 'querystring'
+import _ from 'lodash'
 
 const Schema = mongoose.Schema;
 
@@ -40,6 +41,7 @@ export default function createRule() {
     },
     urls: {
       type: [{
+        _id: false,
         url: String,
         enabled: Boolean
       }],
@@ -110,7 +112,6 @@ export default function createRule() {
       const fn = match(new URL(match_url).pathname || '', { decode: decodeURIComponent });
       const parsed = fn(u.pathname);
       if (parsed.params) {
-        matched = true;
         params = parsed.params;
         const arr = [...(new URL(match_url).searchParams.entries())]
         arr.forEach(([key, value]) => {
