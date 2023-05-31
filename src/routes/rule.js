@@ -12,13 +12,15 @@ router.post('/', async (req, res) => {
   res.success(result);
 });
 router.post('/detect', async (req, res) => {
-  const u = new URL(req.query.url);
+  const url = req.query.url;
+  console.log('delect:' + url);
+  const u = new URL(url);
   let record;
   const rule = await models.Rule.findOne({ status: constant.RULE.STATUS.RUNNING, pattern: { $regex: u.origin } })
   if (rule) {
-    const params = rule.getParams(req.query.url);
+    const params = rule.getParams(url);
+    let code = 1001, message = '匹配到规则但没数据';
     if (params && params.id) {
-      let code = 1001, message = '匹配到规则但没数据';
       record = await models.Record.findOne({ rule_id: rule._id, source_id: params.id }).lean(true);
       if (record) {
         switch (record.status) {

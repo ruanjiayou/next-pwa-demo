@@ -3,7 +3,7 @@ import constant from '~/constant.js'
 import Custom from '~/db/mongo/custom.js'
 
 const Schema = mongoose.Schema;
-export default  function createAttachment() {
+export default function createAttachment() {
   const schema = new Schema({
     _id: {
       type: String,
@@ -42,6 +42,10 @@ export default  function createAttachment() {
     },
     temppath: {
       type: String, // 如果是需要转码.m3u8
+    },
+    nth: {
+      type: Number,
+      default: 1
     },
     createdAt: {
       type: Date,

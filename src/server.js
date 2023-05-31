@@ -36,7 +36,15 @@ class Server {
     this.express.use(response);
     this.express.use(bodyParser.json());
     this.express.use(bodyParser.urlencoded({ extended: false }))
-    this.express.use('/api', router);
+    this.express.use('/api', (req, res, next) => {
+      res.header({
+        'Access-Control-Allow-Private-Network': true,
+        'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      })
+      next();
+    }, router);
   }
 
   initCustomPages() {
