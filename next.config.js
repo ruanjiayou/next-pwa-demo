@@ -16,6 +16,9 @@ export default withSuperjson()(withPWA({
   compress: true,
   poweredByHeader: false,
   distDir: 'dist',
+  compiler: {
+    styledComponents: true
+  },
   poweredByHeader: false,
   generateBuildId: async () => {
     // You can, for example, get the latest git commit hash here

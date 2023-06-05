@@ -44,7 +44,7 @@ function CodeMirror({ value, onChange, language, ...props }) {
   }, [editorRef]);
 
   const render = () => {
-    return (<div ref={editorRef} {...props} />);
+    return (<div style={{ width: '100%', height: '100%', }} ref={editorRef} {...props} />);
   };
 
   return render();

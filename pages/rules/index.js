@@ -130,7 +130,7 @@ export default function RulePage(props) {
       render: (text) => <a>{text}</a>,
     },
     {
-      title: '_id',
+      title: '标识',
       dataIndex: '_id',
     },
     {
@@ -177,7 +177,7 @@ export default function RulePage(props) {
     },
   ]
   return <Observer>{() => (<div>
-    <Wrap size="middle">
+    <Wrap size="middle" style={{ margin: 8 }}>
       <Space size={"small"}>
         <Button type="primary" onClick={() => { local.tempData = {}; setIsModalOpen(true) }}>添加</Button>
         <Button type='primary' onClick={openMatch}>抓取</Button>

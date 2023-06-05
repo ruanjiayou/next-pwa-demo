@@ -15,20 +15,19 @@ export default function createRule() {
       type: String,
       comment: '标识id'
     },
-    type: {
-      type: String,
-      default: '',
-      comment: 'single,page',
-    },
-    mode: {
-      type: String,
-      enum: ['browser', 'pupeeter', 'request'],
-      comment: 'nas用不了代理,只能浏览器处理.一般都可以服务器里request',
-      default: 'fetch'
-    },
-    proxy: {
-      type: Number,
-      default: 0
+    config: {
+      proxy: {
+        type: Number,
+        default: 0
+      },
+      html: {
+        type: Number,
+        default: 0, // 0 not 1 support 2 must
+      },
+      cookie: {
+        type: Number,
+        default: 0, // 0 not 1 support 2 must
+      }
     },
     resource_type: String,
     name: {

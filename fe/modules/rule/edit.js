@@ -1,21 +1,35 @@
 import _ from 'lodash'
 import React, { useState, useRef } from 'react';
-import { Button, Modal, Input, Form, Select, Radio, notification, Space, Switch, } from 'antd';
-import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons'
+import { Button, Modal, Input, Form, Card, Select, Radio, notification, Space, Switch, } from 'antd';
+import { CheckCircleTwoTone, CloseCircleTwoTone, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons'
 import { Observer, useLocalStore } from 'mobx-react-lite';
 import CodeEditor from '@/modules/code-editor'
+import styled from 'styled-components';
 
 // const CodeEditor = dynamic(() =>
 //   import('@/modules/editor'),
 //   { loading: <p>加载中...</p> }
 // )
 
+const CloseBtn = styled.div`
+  position: absolute;
+  right: -20px;
+  top: 0;
+  cursor: pointer;
+  background: wheat;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
 const Item = Form.Item;
 
 export default function RuleEdit({ data, cancel, save }) {
   const local = useLocalStore(() => ({
     editORadd: data._id ? 'edit' : 'add',
-    data: data._id ? _.cloneDeep(data) : { type: 'single', proxy: 0, mode: 'request', poster: '', urls: [], open: false, status: 0 },
+    data: data._id ? _.cloneDeep(data) : { config: { html: 0, proxy: 0, cookie: 0 }, poster: '', urls: [], pattern: '', open: false, status: 0 },
     loading: false,
     ref: '',
     poster: data.poster || '',
@@ -26,6 +40,7 @@ export default function RuleEdit({ data, cancel, save }) {
     tempTag: '',
     tempType: '',
     tempUrl: '',
+    fullscreen: false,
   }))
   const urlRef = useRef(null)
   return <Observer>{() => (<div>
@@ -35,6 +50,7 @@ export default function RuleEdit({ data, cancel, save }) {
       open={true}
       okText={local.editORadd === 'add' ? '添加' : "修改"}
       cancelText="取消"
+      maskClosable={false}
       onOk={async () => {
         local.loading = true
         await save(local.data);
@@ -53,24 +69,29 @@ export default function RuleEdit({ data, cancel, save }) {
         <Item label="描述:" labelCol={{ span: 4 }} defaultValue={local.data.desc}>
           <Input.TextArea />
         </Item>
-        <Item label="类型:" labelCol={{ span: 4 }}>
-          <Radio.Group name="type" defaultValue={"single"} onChange={e => local.data.type = e.target.value}>
-            <Radio value={"single"}>单页</Radio>
-            <Radio value={"pagination"}>分页</Radio>
-          </Radio.Group>
-        </Item>
-        <Item label="模式" labelCol={{ span: 4 }}>
-          <Radio.Group name="mode" defaultValue={"request"} onChange={e => local.data.mode = e.target.value}>
-            <Radio value={'browser'}>browser</Radio>
-            <Radio value={"puppeteer"}>puppeteer</Radio>
-            <Radio value={"request"}>request</Radio>
-          </Radio.Group>
-        </Item>
-        <Item label="代理" labelCol={{ span: 4 }}>
-          <Radio.Group name="proxy" defaultValue={0} onChange={e => local.data.proxy = e.target.value}>
-            <Radio value={0}>无</Radio>
-            <Radio value={1}>有</Radio>
-          </Radio.Group>
+        <Item label="config" labelCol={{ span: 4 }}>
+          <Card>
+            <Item label="proxy" labelCol={{ span: 4 }}>
+              <Radio.Group name="proxy" defaultValue={local.data.config.proxy} onChange={e => local.data.config.proxy = e.target.value}>
+                <Radio value={0}>无</Radio>
+                <Radio value={1}>有</Radio>
+              </Radio.Group>
+            </Item>
+            <Item label="html" labelCol={{ span: 4 }}>
+              <Radio.Group name="html" defaultValue={local.data.config.html} onChange={e => local.data.config.html = e.target.value}>
+                <Radio value={0}>不必</Radio>
+                <Radio value={1}>可选</Radio>
+                <Radio value={2}>必须</Radio>
+              </Radio.Group>
+            </Item>
+            <Item label="cookie" labelCol={{ span: 4 }}>
+              <Radio.Group name="cookie" defaultValue={local.data.config.cookie} onChange={e => local.data.config.cookie = e.target.value}>
+                <Radio value={0}>不必</Radio>
+                <Radio value={1}>可选</Radio>
+                <Radio value={2}>必须</Radio>
+              </Radio.Group>
+            </Item>
+          </Card>
         </Item>
         <Item label="状态" labelCol={{ span: 4 }}>
           <Radio.Group name="status" defaultValue={local.data.status} onChange={e => {
@@ -98,9 +119,21 @@ export default function RuleEdit({ data, cancel, save }) {
             }} />} />
           </Space>
         </Item>
-        <Item>
+        <div style={{
+          position: local.fullscreen ? 'absolute' : 'relative',
+          left: 0,
+          top: 0,
+          width: '100%',
+          height: !local.fullscreen ? 400 : '100%',
+          zIndex: 1011,
+          backgroundColor: 'wheat',
+        }}>
+          <CloseBtn onClick={() => { local.fullscreen = !local.fullscreen;
+           }}>
+            {local.fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+          </CloseBtn>
           <CodeEditor value={local.data.script} onChange={v => local.data.script = v} />
-        </Item>
+        </div>
       </Form>
     </Modal>
   </div>)}</Observer>;
