@@ -39,6 +39,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "react-use": "^17.4.0",
+    "schema": "github:CMS-003/schema",
     "socket.io": "^4.6.1",
     "spark-md5": "^3.0.2",
     "styled-components": "^6.0.0-rc.1",
