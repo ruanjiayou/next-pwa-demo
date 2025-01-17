@@ -1,6 +1,5 @@
 import Base, { getMongoSchema } from "schema/dist/base.js";
 
-
 const models = {};
 
 export async function init(dbs, JsonSchema) {
@@ -24,4 +23,5 @@ export async function init(dbs, JsonSchema) {
   });
   return models;
 }
+
 export default models;

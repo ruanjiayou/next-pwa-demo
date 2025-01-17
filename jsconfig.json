@@ -13,14 +13,12 @@
     },
     "typeRoots": [
       "./@types",
-      "./node_modules/@types"
     ]
   },
   "exclude": [
     "node_modules", // 排除 node_modules
     "**/node_modules/*",
     "fe",
-    "pages",
     "dist",
     "build"
   ]

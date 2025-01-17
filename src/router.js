@@ -1,12 +1,8 @@
 import { Router } from 'express';
-// import Rule from '~/routes/rule.js'
-// import Record from '~/routes/record.js'
-import Component from '~/routes/component.js'
+import Rule from '~/routes/rule.js'
 
 const router = Router();
 
-// router.use('/rules', Rule);
-// router.use('/records', Record);
-router.use('/component', Component);
+router.use('/rules', Rule);
 
 export default router;

@@ -2,14 +2,13 @@ import _ from 'lodash'
 import React, { useState, useCallback, } from 'react';
 import { useEffectOnce } from 'react-use';
 import { Button, Space, Table, notification, Popconfirm, Modal, Select, Input, Form, } from 'antd';
-import ruleService from "~/services/rule";
 import { Observer, useLocalObservable, } from 'mobx-react-lite';
 import { AiTwotoneEdit, AiTwotoneDelete, AiTwotoneRocket, AiOutlineReload } from 'react-icons/ai'
-import RuleEdit from "fe/modules/rule/edit";
-import apis from 'fe/apis'
+import RuleEdit from "@/modules/rule/edit";
+import apis from '@/apis'
 import { Wrap } from '@/component'
 import { match } from 'path-to-regexp'
-import { IconWrap } from 'fe/component/index.js'
+import { IconWrap } from '@/component/index.js'
 
 const RuleStatus = {
   0: { text: '开发中', color: 'blue' },
@@ -18,24 +17,24 @@ const RuleStatus = {
   3: { text: "待上线", color: "#cad100" },
 }
 
-export const getStaticProps = async (ctx) => {
-  const result = await ruleService.getRules();
+export const getServerSideProps = async (ctx) => {
+  const { MSpider } = ctx.res.models;
+  const items = await MSpider.getList({});
+  const total = await MSpider.count();
   return {
     props: {
-      total: result.total,
-      rules: result.items,
+      static: JSON.stringify({ items, total }),
     },
-    revalidate: 60 * 60 * 30,
   };
 };
 
 export default function RulePage(props) {
-  const { rules, total } = props;
+  const { items, total } = JSON.parse(props.static);
   const [isChrome, setIsCrome] = useState(false);
   const [form] = Form.useForm()
   const local = useLocalObservable(() => ({
     tempData: {},
-    rules,
+    items: items,
     page: 1,
     limit: 20,
     matchURL: {
@@ -214,7 +213,7 @@ export default function RulePage(props) {
         <Form.Item label="规则" labelCol={{ span: 2 }} style={{ marginTop: 32 }} >
           <Select disabled value={local.matchURL.matched_rule_id}>
             <Select.Option value="">无</Select.Option>
-            {local.rules.map(rule => (<Select.Option key={rule._id} value={rule._id}>{rule.name}</Select.Option>))}
+            {local.items.map(rule => (<Select.Option key={rule._id} value={rule._id}>{rule.name}</Select.Option>))}
           </Select>
         </Form.Item>
         <Form.Item label="地址" labelCol={{ span: 2 }} name="url">

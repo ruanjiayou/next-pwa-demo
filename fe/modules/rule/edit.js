@@ -11,19 +11,19 @@ import styled from 'styled-components';
 //   { loading: <p>加载中...</p> }
 // )
 
-const CloseBtn = styled.div`
-  position: absolute;
-  right: -20px;
-  top: 0;
-  cursor: pointer;
-  background: wheat;
-  z-index: 2;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
+// const CloseBtn = styled.div`
+//   position: absolute;
+//   right: -20px;
+//   top: 0;
+//   cursor: pointer;
+//   background: wheat;
+//   z-index: 2;
+//   width: 20px;
+//   height: 20px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// `
 const Item = Form.Item;
 
 export default function RuleEdit({ data, cancel, save }) {
@@ -128,10 +128,10 @@ export default function RuleEdit({ data, cancel, save }) {
           zIndex: 1011,
           backgroundColor: 'wheat',
         }}>
-          <CloseBtn onClick={() => { local.fullscreen = !local.fullscreen;
+          <div onClick={() => { local.fullscreen = !local.fullscreen;
            }}>
             {local.fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-          </CloseBtn>
+          </div>
           <CodeEditor value={local.data.script} onChange={v => local.data.script = v} />
         </div>
       </Form>

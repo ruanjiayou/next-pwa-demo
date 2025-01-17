@@ -7,7 +7,7 @@
   "author": "阮家友 <1439120442@qq.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --loader esm-module-alias/loader index.js --watch src",
+    "dev": "NODE_ENV=development nodemon --loader esm-module-alias/loader --no-warnings index.js --watch src",
     "build": "next build && webpack bundle --config webpack.config.js",
     "start": "NODE_ENV=production node build/index.js"
   },

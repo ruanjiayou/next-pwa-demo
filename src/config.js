@@ -1,12 +1,6 @@
 export default {
-  'PORT': '8099',
-  'mongo': {
-    'user': 'root',
-    'pass': '123456',
-    'host': '127.0.0.1',
-    'port': '27017',
-    'db': 'crawler',
-  },
+  'PORT': 8099,
+  'mongo_system_url': 'mongodb://root:123456@127.0.0.1:27017/schema?authSource=admin',
   // 跨域
   'CORS': {
     'origins': '*',
